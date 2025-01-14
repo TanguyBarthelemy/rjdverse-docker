@@ -10,7 +10,4 @@ build_image:
   script:
     - echo "Building Docker image"
     # Si votre Dockerfile est dans un sous-dossier (par exemple, docker/), mettez le bon chemin ici
-    - docker build -t mon-utilisateur/mon-image-ubuntu-java-r-protobuf .
-    # Si vous souhaitez pousser l'image dans Docker Hub, décommentez les lignes ci-dessous :
-    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-    - docker push mon-utilisateur/mon-image-ubuntu-java-r-protobuf:latest
+    - docker build -t .
