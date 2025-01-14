@@ -10,4 +10,4 @@ build_image:
   script:
     - echo "Building Docker image"
     # Si votre Dockerfile est dans un sous-dossier (par exemple, docker/), mettez le bon chemin ici
-    - docker build -t .
+    - docker build .
