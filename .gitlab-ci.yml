@@ -7,5 +7,19 @@ build_image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
+    # Authentification Docker Hub
     - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKERHUB_USERNAME\",\"password\":\"$DOCKERHUB_TOKEN\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination docker.io/$DOCKERHUB_USERNAME/mon-projet:$CI_COMMIT_REF_SLUG
+
+    # Choix du tag (latest si main)
+    - |
+      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+        DEST_TAG="latest"
+      else
+        DEST_TAG="$CI_COMMIT_REF_SLUG"
+      fi
+
+    # Build & push vers Docker Hub
+    - /kaniko/executor \
+        --context $CI_PROJECT_DIR \
+        --dockerfile $CI_PROJECT_DIR/Dockerfile \
+        --destination docker.io/$DOCKERHUB_USERNAME/rjdverse:$DEST_TAG
