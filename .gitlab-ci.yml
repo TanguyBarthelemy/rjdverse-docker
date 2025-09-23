@@ -1,25 +1,64 @@
-stages:
-  - build
+include:
+  - file: images.yaml
+    project: kubernetes/kubeapp/ci-templates
+    ref: main
 
-build_image:
-  stage: build
+default:
+  tags:
+    - docker
+
+variables:
+  HTTP_PROXY: "http://proxy-app.insee.fr:3128"
+  HTTPS_PROXY: "http://proxy-app.insee.fr:3128"
+  NO_PROXY: "insee.test,insee.intra,insee.fr,localhost"
+  GIT_SSL_NO_VERIFY: "1"
+  IMAGE_NAME: "rjdverse"         # nom de ton image sur DockerHub
+  TAG_NAME: "latest"             # ou "$CI_COMMIT_REF_SLUG" si tu veux tagger selon la branche
+
+stages:
+  - docker_build
+  - docker_check
+  - docker_push
+
+docker_build:
+  stage: docker_build
   image:
     name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
+    entrypoint: [ '' ]
   script:
-    # Authentification Docker Hub
-    - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKERHUB_USERNAME\",\"password\":\"$DOCKERHUB_TOKEN\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --no-push --skip-tls-verify --context . --dockerfile Dockerfile --cache-dir cache/image --tarPath image.tar
+  artifacts:
+    when: on_success
+    expire_in: '1 days'
+    paths:
+      - './image.tar'
 
-    # Choix du tag (latest si main)
-    - |
-      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-        DEST_TAG="latest"
-      else
-        DEST_TAG="$CI_COMMIT_REF_SLUG"
-      fi
+docker_check:
+  stage: docker_check
+  image:
+    name: gitlab-registry.insee.fr:443/kubernetes/images/build/trivy-offline:latest
+  variables:
+    TRIVY_SEVERITY: 'CRITICAL,HIGH'
+    TRIVY_SECURITY_CHECK: 'vuln,config,secret'
+  script:
+    # Rapport dans les logs (ne bloque pas si vulnérabilités trouvées)
+    - trivy image --exit-code 0 --skip-db-update --skip-java-db-update --offline-scan --no-progress \
+        --severity $TRIVY_SEVERITY --security-checks $TRIVY_SECURITY_CHECK --input image.tar
+    # Rapport junit (bloque si CRITICAL/HIGH)
+    - trivy image --input image.tar --skip-db-update --skip-java-db-update --offline-scan \
+        --severity $TRIVY_SEVERITY --security-checks $TRIVY_SECURITY_CHECK \
+        --format template --template "@/contrib/junit.tpl" -o gl-container-scanning-report.xml
+  artifacts:
+    reports:
+      junit: gl-container-scanning-report.xml
 
-    # Build & push vers Docker Hub
-    - /kaniko/executor \
-        --context $CI_PROJECT_DIR \
-        --dockerfile $CI_PROJECT_DIR/Dockerfile \
-        --destination docker.io/$DOCKERHUB_USERNAME/rjdverse:$DEST_TAG
+docker_push:
+  stage: docker_push
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [ '' ]
+  script:
+    # Authentification DockerHub
+    - crane auth login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN https://index.docker.io/v1/
+    # Push l’image construite sur DockerHub
+    - crane push image.tar docker.io/$DOCKERHUB_USERNAME/${IMAGE_NAME}:${TAG_NAME}
