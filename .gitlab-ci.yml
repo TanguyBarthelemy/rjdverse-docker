@@ -26,12 +26,17 @@ docker_build:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ '' ]
   script:
-    - /kaniko/executor --no-push --skip-tls-verify --context . --dockerfile Dockerfile --cache-dir cache/image --tarPath image.tar
+    # Authentification pour pouvoir pull depuis DockerHub
+    - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKERHUB_USERNAME\",\"password\":\"$DOCKERHUB_TOKEN\"}}}" > /kaniko/.docker/config.json
+    
+    # Build l'image en tar (mais pas push)
+    - /kaniko/executor --skip-tls-verify --context . --dockerfile Dockerfile --cache-dir cache/image --tarPath image.tar
   artifacts:
     when: on_success
     expire_in: '1 days'
     paths:
       - './image.tar'
+
 
 docker_check:
   stage: docker_check
