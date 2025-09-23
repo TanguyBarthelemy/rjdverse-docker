@@ -4,10 +4,13 @@ stages:
 # Étape pour construire l'image Docker
 build_image:
   stage: build
-  image: docker:latest  # Utilise l'image officielle Docker pour l'exécution du pipeline
+  image: docker:20.10.16  # image client docker
   services:
-    - docker:dind  # Utilise Docker-in-Docker pour la construction de l'image
+    - name: docker:20.10.16-dind
+      command: ["--tls=false"]   # désactive TLS, plus simple pour commencer
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""       # désactive TLS auto
   script:
     - echo "Building Docker image"
-    # Si votre Dockerfile est dans un sous-dossier (par exemple, docker/), mettez le bon chemin ici
-    - docker build .
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
