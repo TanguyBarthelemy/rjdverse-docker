@@ -17,7 +17,7 @@ RUN R -e "install.packages('renv', repos='https://cloud.r-project.org')"
 COPY R/init-renv-lock.R /workspace/init-renv-lock.R
 WORKDIR /workspace
 
-RUN Rscript R/init-renv-lock.R
+RUN Rscript init-renv-lock.R
 RUN R -e "renv::restore()"
 
 CMD ["R"]
