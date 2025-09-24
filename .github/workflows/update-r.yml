@@ -23,42 +23,43 @@ jobs:
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      - name: Install jq & yq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq yq curl
+      - name: Install curl and grep
+        run: sudo apt-get update && sudo apt-get install -y curl grep
 
-      - name: Fetch R versions >= 4.1 from rocker/r-ver
+      - name: Get R versions
+        id: build_versions
         run: |
-          curl -s "https://registry.hub.docker.com/v2/repositories/rocker/r-ver/tags?page_size=200" \
-          | jq -r '.results[].name' \
-          | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' \
-          | sort -V \
-          | awk -F. '$1 == 4 && $2 >= 1 {print}' > r_versions.txt
-          
-          echo "R versions >= 4.1 found:"
+          curl -s https://cran.r-project.org/src/base/ | grep -oE 'R-[0-9]+\.[0-9]+\.[0-9]+' | sort -Vr > r_versions.txt
           cat r_versions.txt
+          grep -E '^R-4\.[1-9]\.[0-9]+$' r_versions.txt | sed 's/^R-//' > filtered_versions.txt
+          cat filtered_versions.txt
+          versions=$(cat filtered_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
+          echo "versions=[${versions}]" >> $GITHUB_OUTPUT
 
-      - name: Update docker.yml matrix
+      - name: Update docker.yml with sed
         run: |
-          versions=$(cat r_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
-          echo "Updating docker.yml with: $versions"
-          yq -i -y ".jobs.build.strategy.matrix.r = [${versions}]" .github/workflows/docker.yml
+          sed -i "s/^        r_version:.*/        r_version: ${{ steps.build_versions.outputs.versions }}/" .github/workflows/docker.yml
+          cat .github/workflows/docker.yml | grep r_version
 
       - name: Update Dockerfile with latest R
         run: |
           latest=$(tail -n 1 r_versions.txt)
           echo "Updating Dockerfile to R $latest"
           sed -i "s|^FROM rocker/r-ver:.*|FROM rocker/r-ver:${latest}|" Dockerfile
+          rm r_versions.txt
  
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
           branch: update-r-versions
-          title: "chore: update R versions matrix (>=4.1) and Dockerfile"
+          base: main
+          title: "Update R versions matrix (>=4.1) and Dockerfile"
           body: |
             This PR updates:
             - Matrix of R versions in `docker.yml` (keeps all >= 4.1)
             - Dockerfile base image set to the latest version of R
           labels: dependencies
+          commit-message: "add/update R versions ${{ steps.build_versions.outputs.new_versions }}"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
