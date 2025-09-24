@@ -1,18 +1,3 @@
-pat <- Sys.getenv("GITHUB_PAT")
-if (pat == "") {
-    message("❌ GITHUB_PAT is not set inside R")
-} else {
-    message("✅ GITHUB_PAT detected, first 6 chars: ", substr(pat, 1, 6))
-}
-
-url <- "https://api.github.com/repos/rjdverse/rjd3toolkit/tags"
-res <- tryCatch(jsonlite::fromJSON(url), error = function(e) e)
-if (inherits(res, "error")) {
-    message("❌ Cannot reach GitHub API: ", res$message)
-} else {
-    message("✅ Tags retrieved: ", paste(head(res$name), collapse = ", "))
-}
-
 # Charger renv
 if (!requireNamespace("renv", quietly = TRUE)) {
     install.packages("renv", repos = "https://cloud.r-project.org")
@@ -23,9 +8,6 @@ library(renv)
 if (!file.exists("renv.lock")) {
     renv::init(bare = TRUE)
 }
-
-install.packages("remotes")
-remotes::install_github("rjdverse/rjd3toolkit@v3.5.1")
 
 # Déclarer tes dépendances GitHub
 remotes <- c(
