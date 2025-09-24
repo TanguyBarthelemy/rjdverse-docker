@@ -1,0 +1,63 @@
+name: Update R versions
+
+on:
+  schedule:
+    # Tous les trimestres, le 1er jour du trimestre à minuit UTC
+    - cron: "0 0 1 1,4,7,10 *"
+  workflow_dispatch: # pour test manuel
+
+jobs:
+  update-r:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq & yq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq yq curl
+
+      - name: Fetch R versions >= 4.1 from rocker/r-ver
+        run: |
+          curl -s "https://registry.hub.docker.com/v2/repositories/rocker/r-ver/tags?page_size=200" \
+          | jq -r '.results[].name' \
+          | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+          | sort -V \
+          | awk -F. '$1 == 4 && $2 >= 1 {print}' > r_versions.txt
+          
+          echo "R versions >= 4.1 found:"
+          cat r_versions.txt
+
+      - name: Update docker.yml matrix
+        run: |
+          versions=$(cat r_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
+          echo "Updating docker.yml with: $versions"
+          yq -i ".jobs.build.strategy.matrix.r = [${versions}]" .github/workflows/docker.yml
+
+      - name: Update Dockerfile with latest R
+        run: |
+          latest=$(tail -n 1 r_versions.txt)
+          echo "Updating Dockerfile to R $latest"
+          sed -i "s|^FROM rocker/r-ver:.*|FROM rocker/r-ver:${latest}|" Dockerfile
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b update-r-versions
+          git add .github/workflows/docker.yml Dockerfile
+          git commit -m "chore: update R versions matrix (>=4.1) and Dockerfile to latest"
+          git push origin update-r-versions
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: update-r-versions
+          title: "chore: update R versions matrix (>=4.1) and Dockerfile"
+          body: |
+            This PR updates:
+            - R versions in `docker.yml` (keeps all >= 4.1)
+            - Dockerfile base image set to the latest version of R
+          labels: dependencies
