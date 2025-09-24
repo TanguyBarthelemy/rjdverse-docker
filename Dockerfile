@@ -1,6 +1,10 @@
 # Utilisez l'image Ubuntu officielle comme base
 FROM ubuntu:20.04
 
+# Désactiver l’interactivité (évite les prompts tzdata, locales, etc.)
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
 # Mettre à jour et installer les dépendances essentielles
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     sudo \
