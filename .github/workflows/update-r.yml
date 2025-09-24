@@ -34,7 +34,7 @@ jobs:
         run: |
           versions=$(cat r_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
           echo "Updating docker.yml with: $versions"
-          yq -i ".jobs.build.strategy.matrix.r = [${versions}]" .github/workflows/docker.yml
+          yq -i -y ".jobs.build.strategy.matrix.r = [${versions}]" .github/workflows/docker.yml
 
       - name: Update Dockerfile with latest R
         run: |
