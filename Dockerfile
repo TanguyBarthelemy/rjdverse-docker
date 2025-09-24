@@ -1,51 +1,30 @@
-# Utilisez l'image Ubuntu officielle comme base
-FROM ubuntu:20.04
+FROM rocker/r-ver:4.4.2
 
-# Désactiver l’interactivité (évite les prompts tzdata, locales, etc.)
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Etc/UTC
-
-# Mettre à jour et installer les dépendances essentielles
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    sudo \
-    wget \
-    curl \
-    gnupg2 \
-    lsb-release \
-    ca-certificates \
-    build-essential \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    libxml2-dev \
+# Dépendances Java et ProtoBuf
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
     protobuf-compiler \
     libprotobuf-dev \
     libprotoc-dev \
-    software-properties-common \
-    apt-transport-https
+    curl \
+    git \
+    build-essential \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libxml2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Installer OpenJDK 17
-RUN apt-get install -y openjdk-17-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Ajouter les dépôts CRAN pour R
-RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" | tee -a /etc/apt/sources.list
+RUN R CMD javareconf
 
-# Ajouter la clé GPG pour les dépôts CRAN
-RUN curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee /etc/apt/trusted.gpg.d/marutter.asc
+# installer les packages R
+RUN R -e "install.packages('renv', repos='https://cloud.r-project.org')"
 
-# Installer R 4.4.2
-RUN apt-get update && apt-get install -y r-base
-
-# Vérifier les versions installées
-RUN java -version && R --version
-
-# Installer ProtoBuf (si ce n'est pas déjà installé avec apt)
-RUN apt-get install -y protobuf-compiler libprotobuf-dev libprotoc-dev
-
-# Définir un répertoire de travail
 WORKDIR /workspace
+COPY renv.lock renv.lock
 
-# Exposer le port si nécessaire (optionnel)
-# EXPOSE 8787
+RUN R -e "renv::restore()"
 
-# Lancer un shell par défaut (vous pouvez remplacer cela par une commande spécifique si vous en avez besoin)
-CMD ["/bin/bash"]
+CMD ["R"]
