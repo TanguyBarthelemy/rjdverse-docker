@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        r_version: [ "4.5.1", "4.4.2", "4.3.3", "4.2.3", "4.1.3" ]
 
     permissions:
       contents: read
@@ -29,10 +32,24 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Update Dockerfile and renv.lock
+        run: |
+          sed -i "s/^FROM rocker\/r-ver:.*/FROM rocker\/r-ver:${{ matrix.r_version }}/" Dockerfile
+
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: docker.io/tanguy36/rjdverse:${{ github.ref_name }}
+          tags: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:R-${{ matrix.r_version }}
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:R-${{ matrix.r_version }}-3.5.1
+
+      - name: Also tag as latest for latest R version and latest 
+        if: matrix.r_version == '4.5.1'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:latest
