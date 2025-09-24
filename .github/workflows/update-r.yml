@@ -47,7 +47,7 @@ jobs:
           echo "Updating Dockerfile to R $latest"
           sed -i "s|^FROM rocker/r-ver:.*|FROM rocker/r-ver:${latest}|" Dockerfile
 
-     - name: Commit changes
+      - name: Commit changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
