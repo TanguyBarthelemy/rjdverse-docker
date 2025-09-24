@@ -57,3 +57,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:latest
+          build-args:
+            GITHUB_PAT=${{ secrets.WORKFLOW_TOKEN }}

@@ -17,7 +17,7 @@ remotes <- c(
 
 # Installer et enregistrer les packages
 for (pkg in remotes) {
-    renv::install(pkg)
+    renv::install(pkg, type = "source", dependencies = "all")
 }
 
 # Snapshot pour figer l'état dans renv.lock
