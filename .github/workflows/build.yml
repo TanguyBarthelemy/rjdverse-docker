@@ -36,6 +36,7 @@ jobs:
         run: |
           sed -i "s/^FROM rocker\/r-ver:.*/FROM rocker\/r-ver:${{ matrix.r_version }}/" Dockerfile
 
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -45,7 +46,7 @@ jobs:
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:R-${{ matrix.r_version }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:R-${{ matrix.r_version }}-3.5.1
 
-      - name: Also tag as latest for latest R version and latest 
+      - name: Tag latest
         if: matrix.r_version == '4.5.1'
         uses: docker/build-push-action@v5
         with:
