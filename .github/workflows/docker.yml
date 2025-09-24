@@ -46,6 +46,8 @@ jobs:
           tags: |
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:R-${{ matrix.r_version }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rjdverse:R-${{ matrix.r_version }}-3.5.1
+        env:
+          GITHUB_PAT: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Tag latest
         if: matrix.r_version == '4.5.1'

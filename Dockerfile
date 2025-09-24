@@ -2,7 +2,7 @@ FROM rocker/r-ver:4.5.1
 
 # Dépendances système pour Java & ProtoBuf
 RUN apt-get update && apt-get install -y \
-    openjdk-17-jdk \
+    openjdk-21-jdk \
     protobuf-compiler libprotobuf-dev libprotoc-dev \
     && rm -rf /var/lib/apt/lists/*
 
