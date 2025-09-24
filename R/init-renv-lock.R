@@ -11,8 +11,8 @@ if (!file.exists("renv.lock")) {
 
 # Déclarer tes dépendances GitHub
 remotes <- c(
-    "rjdverse/rjd3toolkit@3.5.1",
-    "rjdverse/rjd3x13@3.5.1"
+    "rjdverse/rjd3toolkit@v3.5.1",
+    "rjdverse/rjd3x13@v3.5.1"
 )
 
 # Installer et enregistrer les packages
