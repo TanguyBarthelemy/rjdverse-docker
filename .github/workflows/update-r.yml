@@ -6,16 +6,16 @@ on:
     - cron: "0 0 1 1,4,7,10 *"
   workflow_dispatch: # pour test manuel
   push:
-    
-permissions:
-  contents: write
-  pull-requests: write
-  actions: write
 
 jobs:
   update-r:
     runs-on: ubuntu-latest
- 
+
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
