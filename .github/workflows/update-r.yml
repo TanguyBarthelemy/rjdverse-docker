@@ -5,6 +5,7 @@ on:
     # Tous les trimestres, le 1er jour du trimestre à minuit UTC
     - cron: "0 0 1 1,4,7,10 *"
   workflow_dispatch: # pour test manuel
+  push:
     
 permissions:
   contents: write
