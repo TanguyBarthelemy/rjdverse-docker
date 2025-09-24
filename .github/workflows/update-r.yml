@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
-      actions: write
-      workflow: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }} # utilisation du token custom
 
       - name: Install jq & yq
         run: |
@@ -57,6 +57,8 @@ jobs:
           git add .github/workflows/docker.yml Dockerfile
           git commit -m "chore: update R versions matrix (>=4.1) and Dockerfile to latest"
           git push origin update-r-versions
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
  
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
