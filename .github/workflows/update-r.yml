@@ -37,7 +37,8 @@ jobs:
           echo "R versions >= 4.1 found:"
           cat r_versions.txt
           versions=$(cat r_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
-          echo "versions=[${versions}]" >> $GITHUB_OUTPUT
+          echo "Formatted versions: [ $versions ]"
+          echo "versions=[ $versions ]" >> $GITHUB_OUTPUT
 
       - name: Update docker.yml with sed
         run: |
@@ -54,7 +55,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: update-r-versions3
+          branch: update-r-versions
           base: main
           title: "Update R versions matrix (>=4.1) and Dockerfile"
           body: |
