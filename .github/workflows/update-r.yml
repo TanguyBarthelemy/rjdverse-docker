@@ -5,14 +5,15 @@ on:
     # Tous les trimestres, le 1er jour du trimestre à minuit UTC
     - cron: "0 0 1 1,4,7,10 *"
   workflow_dispatch: # pour test manuel
+    
+permissions:
+  contents: write
+  pull-requests: write
+  workflows: write
 
 jobs:
   update-r:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: write
-      pull-requests: write
  
     steps:
       - name: Checkout repository
