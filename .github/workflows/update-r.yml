@@ -64,5 +64,5 @@ jobs:
           body: |
             This PR updates:
             - R versions in `docker.yml` (keeps all >= 4.1)
-            - Dockerfile base image set to the latest version of R
+            - Dockerfile base image set  to the latest version of R
           labels: dependencies
