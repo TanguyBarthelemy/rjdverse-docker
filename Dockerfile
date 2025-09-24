@@ -17,6 +17,7 @@ RUN R -e "install.packages('renv', repos='https://cloud.r-project.org')"
 COPY R/init-renv-lock.R /workspace/init-renv-lock.R
 WORKDIR /workspace
 
+ENV GITHUB_PAT=${GITHUB_PAT}
 RUN Rscript init-renv-lock.R
 RUN R -e "renv::restore()"
 
