@@ -1,6 +1,6 @@
 pat <- Sys.getenv("GITHUB_PAT")
 if (pat == "") {
-    stop("❌ GITHUB_PAT is not set inside R")
+    message("❌ GITHUB_PAT is not set inside R")
 } else {
     message("✅ GITHUB_PAT detected, first 6 chars: ", substr(pat, 1, 6))
 }
