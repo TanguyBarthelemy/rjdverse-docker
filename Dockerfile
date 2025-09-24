@@ -1,17 +1,9 @@
 FROM rocker/r-ver:4.5.1
 
-# Dépendances Java et ProtoBuf
+# Dépendances système pour Java & ProtoBuf
 RUN apt-get update && apt-get install -y \
-    openjdk-21-jdk \
-    protobuf-compiler \
-    libprotobuf-dev \
-    libprotoc-dev \
-    curl \
-    git \
-    build-essential \
-    libssl-dev \
-    libcurl4-openssl-dev \
-    libxml2-dev \
+    openjdk-17-jdk \
+    protobuf-compiler libprotobuf-dev libprotoc-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
@@ -23,8 +15,9 @@ RUN R CMD javareconf
 RUN R -e "install.packages('renv', repos='https://cloud.r-project.org')"
 
 WORKDIR /workspace
-COPY renv.lock renv.lock
 
+COPY R/init-renv-lock.R /workspace/init-renv-lock.R
+RUN Rscript /workspace/init-renv-lock.R
 RUN R -e "renv::restore()"
 
 CMD ["R"]
