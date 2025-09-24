@@ -6,6 +6,8 @@ on:
     - cron: "0 0 1 1,4,7,10 *"
   workflow_dispatch: # pour test manuel
   push:
+    branches:
+      - main
 
 jobs:
   update-r:
