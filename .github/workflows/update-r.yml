@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   update-r:
@@ -47,6 +48,15 @@ jobs:
           echo "Updating Dockerfile to R $latest"
           sed -i "s|^FROM rocker/r-ver:.*|FROM rocker/r-ver:${latest}|" Dockerfile
 
+     - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b update-r-versions
+          git add .github/workflows/docker.yml Dockerfile
+          git commit -m "chore: update R versions matrix (>=4.1) and Dockerfile to latest"
+          git push origin update-r-versions
+ 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
