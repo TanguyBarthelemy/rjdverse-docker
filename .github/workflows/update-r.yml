@@ -56,7 +56,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: update-r-versions
+          branch: update-r-versions2
           base: main
           title: "Update R versions matrix (>=4.1) and Dockerfile"
           body: |
