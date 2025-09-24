@@ -24,6 +24,7 @@ if (!file.exists("renv.lock")) {
     renv::init(bare = TRUE)
 }
 
+install.packages("remotes")
 remotes::install_github("rjdverse/rjd3toolkit@v3.5.1")
 
 # Déclarer tes dépendances GitHub
