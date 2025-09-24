@@ -36,9 +36,7 @@ jobs:
           | awk -F. '$1 == 4 && $2 >= 1 {print}' > r_versions.txt
           echo "R versions >= 4.1 found:"
           cat r_versions.txt
-          grep -E '^R-4\.[1-9]\.[0-9]+$' r_versions.txt | sed 's/^R-//' > filtered_versions.txt
-          cat filtered_versions.txt
-          versions=$(cat filtered_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
+          versions=$(cat r_versions.txt | sed 's/^/"/;s/$/"/' | paste -sd, -)
           echo "versions=[${versions}]" >> $GITHUB_OUTPUT
 
       - name: Update docker.yml with sed
@@ -56,7 +54,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: update-r-versions2
+          branch: update-r-versions3
           base: main
           title: "Update R versions matrix (>=4.1) and Dockerfile"
           body: |
