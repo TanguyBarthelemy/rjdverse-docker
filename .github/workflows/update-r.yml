@@ -29,7 +29,12 @@ jobs:
       - name: Get R versions
         id: build_versions
         run: |
-          curl -s https://cran.r-project.org/src/base/ | grep -oE 'R-[0-9]+\.[0-9]+\.[0-9]+' | sort -Vr > r_versions.txt
+          curl -s "https://registry.hub.docker.com/v2/repositories/rocker/r-ver/tags?page_size=200" \
+          | jq -r '.results[].name' \
+          | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+          | sort -V \
+          | awk -F. '$1 == 4 && $2 >= 1 {print}' > r_versions.txt
+          echo "R versions >= 4.1 found:"
           cat r_versions.txt
           grep -E '^R-4\.[1-9]\.[0-9]+$' r_versions.txt | sed 's/^R-//' > filtered_versions.txt
           cat filtered_versions.txt
@@ -46,7 +51,6 @@ jobs:
           latest=$(tail -n 1 r_versions.txt)
           echo "Updating Dockerfile to R $latest"
           sed -i "s|^FROM rocker/r-ver:.*|FROM rocker/r-ver:${latest}|" Dockerfile
-          rm r_versions.txt
  
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
