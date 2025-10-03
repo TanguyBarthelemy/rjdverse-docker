@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.5.1
+FROM inseefrlab/onyxia-rstudio:4.5.1
 
 # Dépendances système pour Java & ProtoBuf
 RUN apt-get update && apt-get install -y \
@@ -14,13 +14,10 @@ ENV GITHUB_PAT=${GITHUB_PAT}
 
 RUN R CMD javareconf
 
-# installer les packages R
-RUN R -e "install.packages('renv', repos='https://cloud.r-project.org')"
+WORKDIR ${HOME}
 
-COPY R/init-renv-lock.R /workspace/init-renv-lock.R
-WORKDIR /workspace
+# Installer les packages R
+COPY renv.lock .
+RUN Rscript -e "renv::restore(library = file.path(Sys.getenv('HOME'), 'renv', 'library'))"
 
-RUN Rscript init-renv-lock.R
-RUN R -e "renv::restore()"
-
-CMD ["R"]
+RUN chown -R onyxia ${HOME}

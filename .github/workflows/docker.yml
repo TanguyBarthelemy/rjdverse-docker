@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r_version: [ "4.5.1", "4.4.1", "4.3.1", "4.2.1", "4.1.3" ]
+        r_version: [ "4.5.1", "4.5.0", "4.4.3", "4.4.2", "4.4.1", "4.4.0", "4.3.3", "4.3.2", "4.3.1", "4.2.3", "4.2.2", "4.2.1", "4.1.3" ]
 
     permissions:
       contents: read
@@ -35,7 +35,7 @@ jobs:
 
       - name: Update Dockerfile and renv.lock
         run: |
-          sed -i "s/^FROM rocker\/r-ver:.*/FROM rocker\/r-ver:${{ matrix.r_version }}/" Dockerfile
+          sed -i "s/^FROM inseefrlab\/onyxia-rstudio:.*/FROM inseefrlab\/onyxia-rstudio:r${{ matrix.r_version }}/" Dockerfile
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
