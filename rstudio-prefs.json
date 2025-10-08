@@ -60,5 +60,5 @@
     "copilot_enabled": false,
     "reformat_on_save": true,
     "code_formatter": "external",
-    "code_formatter_external_command": "/usr/local/bin/air"
+    "code_formatter_external_command": "$HOME/.local/bin/air"
 }
