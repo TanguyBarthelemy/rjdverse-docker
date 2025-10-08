@@ -4,6 +4,7 @@ FROM inseefrlab/onyxia-rstudio:4.5.1
 RUN apt-get update && apt-get install -y \
     openjdk-21-jdk \
     protobuf-compiler libprotobuf-dev libprotoc-dev \
+	libcairo2-dev \
 	libharfbuzz-dev libfribidi-dev \
     && rm -rf /var/lib/apt/lists/*
 
