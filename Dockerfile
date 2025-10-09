@@ -23,7 +23,4 @@ WORKDIR ${HOME}
 COPY renv.lock .
 RUN Rscript -e "renv::restore(library = file.path(Sys.getenv('HOME'), 'renv', 'library'))"
 
-COPY rstudio-prefs.json ${HOME}/rstudio/.config/rstudio/rstudio-prefs.json
-RUN chown -R rstudio:rstudio ${HOME}/rstudio/.config
-
 RUN chown -R onyxia ${HOME}
