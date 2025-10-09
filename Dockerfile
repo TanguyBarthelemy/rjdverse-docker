@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     protobuf-compiler libprotobuf-dev libprotoc-dev \
 	libcairo2-dev \
 	libharfbuzz-dev libfribidi-dev \
-	libgit2-dev \
+	libgit2-dev \	
     && rm -rf /var/lib/apt/lists/*
 
 ARG GITHUB_PAT
@@ -17,7 +17,7 @@ ENV GITHUB_PAT=${GITHUB_PAT}
 
 RUN R CMD javareconf
 
-WORKDIR ${HOME}
+WORKDIR ${HOME}/work
 
 # Installer les packages R
 COPY renv.lock .
