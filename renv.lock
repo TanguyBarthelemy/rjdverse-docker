@@ -3530,12 +3530,12 @@
     },
     "rjd3toolkit": {
       "Package": "rjd3toolkit",
-      "Version": "3.5.2",
+      "Version": "3.5.1",
       "Source": "GitHub",
       "Type": "Package",
       "Title": "Utility Functions Around 'JDemetra+ 3.0'",
       "Authors@R": "c( person(given = \"Jean\",  family = \"Palate\", role = c(\"aut\"), email = \"palatejean@gmail.com\"), person(given = \"Alain\",  family = \"Quartier-la-Tente\", role = c(\"aut\"), email = \"alain.quartier@yahoo.fr\", comment = c(ORCID = \"0000-0001-7890-3857\")), person(given = \"Tanguy\",  family = \"Barthelemy\", role = c(\"aut\", \"cre\", \"art\"), email =\"tanguy.barthelemy@insee.fr\"), person(given = \"Anna\",  family = \"Smyk\", role = c(\"aut\"), email =\"anna.smyk@insee.fr\") )",
-      "Description": "R Interface to 'JDemetra+ 3.x' (<https://github.com/jdemetra>) time series analysis software. It provides functions allowing to model time series (create outlier regressors, user-defined calendar regressors, UCARIMA models...), to test the presence of trading days or seasonal effects and also to set specifications in pre-adjustment and benchmarking when using 'rjd3x13' or 'rjd3tramoseats'.",
+      "Description": "R Interface to 'JDemetra+ 3.x' (<https://github.com/jdemetra>) time series analysis software. It provides functions allowing to model time series (create outlier regressors, user-defined calendar regressors, UCARIMA models...), to test the presence of trading days or seasonal effects and also to set specifications in pre-adjustment and benchmarking when using rjd3x13 or rjd3tramoseats.",
       "Depends": [
         "R (>= 4.1)"
       ],
@@ -3546,7 +3546,7 @@
         "methods"
       ],
       "SystemRequirements": "Java (>= 17)",
-      "License": "EUPL",
+      "License": "file LICENSE",
       "URL": "https://github.com/rjdverse/rjd3toolkit, https://rjdverse.github.io/rjd3toolkit/",
       "LazyData": "TRUE",
       "Suggests": [
@@ -3565,8 +3565,8 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "rjdverse",
       "RemoteRepo": "rjd3toolkit",
-      "RemoteRef": "develop",
-      "RemoteSha": "178a2e399100d8f121a98f57ace8130363a7749c"
+      "RemoteRef": "v3.5.1",
+      "RemoteSha": "025bf6369a6cddbb87df79725548455191930a60"
     },
     "rjd3tramoseats": {
       "Package": "rjd3tramoseats",
